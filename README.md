@@ -9,7 +9,7 @@
 
 翻訳はDeepLで翻訳したものを少し手直している程度です．
 
-[翻訳ページ]()
+[翻訳ページ](/Translation/Translation-Processing-Tutorial-Kinetic-Typography-1.md)
 
 ## プログラムについて
 
