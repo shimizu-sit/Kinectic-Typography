@@ -58,3 +58,50 @@ int dh = 250;
 
 copy(sx, sy, sw, sh, dx, dy, dw, dh);
 ```
+
+今回のキネティックタイプの実験では，これと全く同じことを，2次元のグリッドにある複数の要素で行いたいと思います．では，実際のスケッチをまとめましょう．
+
+## Preparing the sketch
+
+まず，テンプレートとして使用したい [PGraphics](https://processing.org/reference/PGraphics.html) オブジェクトを作成し，初期化する必要があります．次に， [PFont](https://processing.org/reference/PFont.html) を作成し，初期化します．注意：フォントファイルをデータフォルダにコピーしていることを確認してください．今回使うフォントは，[RobotoMono](https://fonts.google.com/specimen/Roboto+Mono) です．
+
+```Processing
+PGraphics pg;
+PFont font;
+
+void setup() {
+    font = createFont("RobotMono-Regular.ttf", 600);
+    size(800, 800, P2D);
+    pg = createGraphics(800, 800, P2D);
+}
+```
+
+次に，レンダリングをdraw関数ないのPGraphics要素に配置し，中央に配置します．
+
+PGraphicsを使ったことがない方のために説明しますと，PGraphicsはPhotoshopのレイヤーと同様のものです．PGraphicsは，Photoshopのレイヤーと同様なので，実際のスケッチでは，独立したスケッチとして扱うことができます．これは，複雑さを管理し，物事を切り取るための非常に強力なツールです．いつものように，もし，ここで行き詰ったら， [リファレンス](https://processing.org/reference/PGraphics.html) を調べてみてください．
+
+```Processing
+void draw() {
+  background(0);
+  pg.beginDraw();
+  pg.background(0);
+  pg.fill(255);
+  pg.textFont(font);
+  pg.textSize(800);
+  pg.pushMatrix();
+  pg.translate(width/2, height/2-215);
+  pg.textAlign(CENTER, CENTER);
+  pg.text("a", 0, 0);
+  pg.popMatrix();
+  pg.endDraw();
+}
+```
+
+実行ボタンを押しても何も表示されませんが，これはPGraphicsを描画していないからです．それでは，image関数を使って手っ取り早く，すべてが正しい場所に配置されているかどうかをチェックしてみましょう．
+
+```Processing
+image(pg, 0, 0);
+```
+
+![a-300x300](../image/a-300x300.png)
+
