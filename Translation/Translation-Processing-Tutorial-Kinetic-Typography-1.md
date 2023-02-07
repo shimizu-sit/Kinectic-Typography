@@ -105,3 +105,138 @@ image(pg, 0, 0);
 
 ![a-300x300](../image/a-300x300.png)
 
+ここまでは順調です，これからやるべきことは，グリッドを作成するための2次元のforループをラップすることです．しかし，これは，正しい寸法を計算するために使うことができます．まず，X軸とY軸の両方に8枚のタイルを配置することにしましょう．
+
+```Processing
+int tilesX = 8;
+int tilesY = 8;
+
+int tileW = int(width/tilesX);
+int tileY = int(height/tilesY);
+
+for(int y = 0; y < tilesY; y++) {
+  for(int x = 0; x < tilesX; x++) {
+    ...
+  }
+}
+```
+
+![grid](../image/grid.png)
+
+次に，コピー機能をグリッドに配置し，タイルの寸法と位置を適切な場所に配置しましょう．
+
+```Processing
+int tilesX = 8;
+int tilesY = 8;
+
+int tileW = int(width/tilesX);
+int tileH = int(height/tilesY);
+
+for (int y = 0; y < tilesY; y++) {
+  for (int x = 0; x < tilesX; x++) {
+    
+    // SOURCE
+    int sx = x*tileW;
+    int sy = y*tileH;
+    int sw = tileW;
+    int sh = tileH;
+    
+    // DESTINATION
+    int dx = x*tileW;
+    int dy = y*tileH;
+    int dw = tileW;
+    int dh = tileH;
+      
+    copy(pg, sx, sy, sw, sh, dx, dy, dw, dh);
+    }
+  }
+```
+
+今スケッチを実行すると，ウィンドウに白い小文字の "a" が表示されます．ここでは，何も派手なことは起こっていないようです．なぜでしょうか？
+
+実は，すでにタイルを適切な位置にコピーしているのですが，それに対して何もしていないのです．上のコードを見ると，コピー元の値とコピー先の値が等しいことがわかると思います．そこで，これからやるべきことは，要素に移動方法を指示するロジックをかくことです．
+
+移動元を操作することも，移動先を操作することもできる．どちらの方法でも，まったく異なる面白い効果が得られます．このチュートリアルでは，シンプルに，ソース座標（ `sx` と `sy` ）を操作することにします．
+
+![grid-1](../image/grid-1.png)
+
+## Pushing a wave through the grid
+
+さて，次は歪み効果を表す変数を定義する番です．この変数はネストされたforループの中にあり，各反復でわずかに異なるものであんければならない．もしこの変数の出力があまりに無秩序だと，ランダムな効果を生み出してしまいます．それは，私たちが望んでいるものとはちょっと違います．私たちの目的はスムーズな動きを得ることなので，frameCountとループ内の座標によって制御されるsin()関数を使用することになります．
+
+```Processing
+int wave = int(sin(frameCount * 0.01 + (x * y)) * 30);
+```
+
+sin()関数をまだ一度も使ったことがなくても，心配はいりません．これは-1から1の間の値を生成し，その位相を制御するために引数として数値を取ります．もしここで行き詰まったら，Processingのリファレンスを調べてみてください．Processingで波がどのように機能するかを理解することは，特にアニメーションを扱う場合，様々なことに非常に役立ちます．
+
+最後になりますが，source-x座標にwave変数を混ぜてみましょう．
+
+```Processing
+int sx = x * tilesW + wave;
+```
+
+## Here's the complete code
+
+```Processing
+PFont font;
+PGraphics pg;
+
+void setup() {
+  font = createFont("RobotoMono-Regular.ttf", 600);
+  size(800, 800, P2D);
+  pg = createGraphics(800, 800, P2D);
+}
+
+void draw() {
+  background(0);
+
+  // PGraphics 
+
+  pg.beginDraw();
+  pg.background(0);
+  pg.fill(255);
+  pg.textFont(font);
+  pg.textSize(800);
+  pg.pushMatrix();
+  pg.translate(width/2, height/2-215);
+  pg.textAlign(CENTER, CENTER);
+  pg.text("a", 0, 0);
+  pg.popMatrix();
+  pg.endDraw();
+
+  int tilesX = 16;
+  int tilesY = 16;
+
+  int tileW = int(width/tilesX);
+  int tileH = int(height/tilesY);
+
+  for (int y = 0; y < tilesY; y++) {
+    for (int x = 0; x < tilesX; x++) {
+
+      // WARP
+      int wave = int(sin(frameCount * 0.05 + ( x * y ) * 0.07) * 100);
+
+      // SOURCE
+      int sx = x*tileW + wave;
+      int sy = y*tileH;
+      int sw = tileW;
+      int sh = tileH;
+
+
+      // DESTINATION
+      int dx = x*tileW;
+      int dy = y*tileH;
+      int dw = tileW;
+      int dh = tileH;
+      
+      copy(pg, sx, sy, sw, sh, dx, dy, dw, dh);
+
+    }
+  }
+}
+```
+
+## That's it!
+
+完了です！すべてきちんと理解していただけたでしょうか．このチュートリアルに何かおすすめがあれば，遠慮なくご連絡ください．そしてもちろん，あなたがどんなビジュアルを思いついたかみるのも大好きです．ぜひご連絡ください．
